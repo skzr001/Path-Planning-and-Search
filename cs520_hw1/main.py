@@ -8,7 +8,7 @@ import BFS
 dim = int(input ("Please enter a number indicating the dimension of maze: "))
 maze_matrix = np.zeros((dim, dim))
 prob_occ = float(input ("Please enter a number indicating the probability of disabled blocks: "))
-# print (maze_matrix)
+print (maze_matrix)
 
 num_disabled_blocks = int(np.floor(dim*dim*prob_occ)-2)  # start and end shouldn't be occupied
 if num_disabled_blocks > 0:

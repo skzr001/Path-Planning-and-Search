@@ -24,11 +24,11 @@ def build_maze(maze_matrix):
                 edge_left = ((i, j), 'Left')
                 edge_right = ((i, j + 1), 'Right')
                 if i < maze_high - 1 and maze_matrix[i + 1][j] == 0:
-                    maze_dict[(i, j)].append(edgeS)
-                    maze_dict[(i + 1, j)].append(edgeN)
+                    maze_dict[(i, j)].append(edgeS_down)
+                    maze_dict[(i + 1, j)].append(edge_up)
                 if j < maze_width - 1 and maze_matrix[i][j + 1] == 0:
-                    maze_dict[(i, j)].append(edgeE)
-                    maze_dict[(i, j + 1)].append(edgeW)
+                    maze_dict[(i, j)].append(edge_right)
+                    maze_dict[(i, j + 1)].append(edge_left)
 
     #print('------DICT----------')
     #print (maze_dict)
