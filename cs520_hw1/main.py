@@ -4,6 +4,8 @@ import math
 import Maze
 import DFS
 import BFS
+import AStar_Manhattan
+import AStar_Euclidean
 
 dim = int(input ("Please enter a number indicating the dimension of maze: "))
 maze_matrix = np.zeros((dim, dim))
@@ -26,10 +28,19 @@ maze_dict = Maze.build_maze(maze_matrix)
 maze_matrix_dfs_visited = DFS.dfs(maze_dict, dim, maze_matrix)
 print maze_matrix_dfs_visited
 
-# show_BFS
+# show BFS
 maze_matrix_bfs_visited = BFS.bfs(maze_dict, dim, maze_matrix)
 print maze_matrix_bfs_visited
 
+
+# show AStar_Manhattan
+maze_matrix_AM_visited = AStar_Manhattan.a_star_search(maze_dict, dim, maze_matrix)
+print maze_matrix_AM_visited
+
+
+# show AStar_Euclidean
+maze_matrix_AE_visited = AStar_Euclidean.a_star_search(maze_dict, dim, maze_matrix)
+print maze_matrix_AE_visited
 
 
 
