@@ -2,7 +2,10 @@ import numpy as np
 import math
 import heapq
 
+
 # Manhattan distance
+
+
 def dist_Manhattan(a, b):
     (x1, y1) = a
     (x2, y2) = b
@@ -32,6 +35,11 @@ class PriorityQueue:
 
 def a_star_search(maze_dict, dim, maze_matrix):
     maze_matrix_AM_visited = np.copy(maze_matrix)
+
+
+    result = dict()
+
+
     visited = PriorityQueue()
     visited.put((0, 0), 0)
     destination = (dim - 1, dim - 1)
