@@ -51,6 +51,8 @@ def a_star_search(maze_dict, dim, maze_matrix):
         max_fringe = max(max_fringe, num_fringe)
         current = visited.get()
         num_fringe = 1
+        maze_matrix_AM_visited[(0, 0)] = -1
+
         if current == destination:
             # output
             print ("Congratulations! A* with Manhattan distance has reached the destination!")
@@ -66,7 +68,7 @@ def a_star_search(maze_dict, dim, maze_matrix):
             print ("Number of Max fringe: " + str(result["max_fringe"]))
             result["maze_solve_time"] = (time.time() - start)
             print ("running time is: " + str(result["maze_solve_time"]))
-            return maze_matrix_AM_visited
+            return result
         
         for child, path in maze_dict[current]:
             new_cost = cost_so_far[current] + 1

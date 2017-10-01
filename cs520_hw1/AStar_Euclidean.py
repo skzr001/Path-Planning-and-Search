@@ -30,7 +30,7 @@ class PriorityQueue:
         return len(self.elements)
 
 
-def a_star_search(maze_dict, dim, maze_matrix):
+def a_stars_search(maze_dict, dim, maze_matrix):
     start = time.time()
     maze_matrix_AE_visited = np.copy(maze_matrix)
     visited = PriorityQueue()
@@ -50,6 +50,7 @@ def a_star_search(maze_dict, dim, maze_matrix):
         max_fringe = max(max_fringe, num_fringe)
         current = visited.get()
         num_fringe = 1
+        maze_matrix_AE_visited[(0, 0)] = -1
         if current == destination:
 
             # output
@@ -66,7 +67,7 @@ def a_star_search(maze_dict, dim, maze_matrix):
             print ("Number of Max fringe: " + str(result["max_fringe"]))
             result["maze_solve_time"] = (time.time() - start)
             print ("running time is: " + str(result["maze_solve_time"]))
-            return maze_matrix_AE_visited
+            return result
         
         for child, path in maze_dict[current]:
             new_cost = cost_so_far[current] + 1
