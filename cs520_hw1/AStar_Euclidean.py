@@ -1,6 +1,7 @@
 import numpy as np
 import math
 import heapq
+import time
 
 def dist_Euclidean(a, b):
     (x1, y1) = a
@@ -30,6 +31,7 @@ class PriorityQueue:
 
 
 def a_star_search(maze_dict, dim, maze_matrix):
+    start = time.time()
     maze_matrix_AE_visited = np.copy(maze_matrix)
     visited = PriorityQueue()
     visited.put((0, 0), 0)
@@ -49,7 +51,7 @@ def a_star_search(maze_dict, dim, maze_matrix):
         current = visited.get()
         num_fringe = 1
         if current == destination:
-            
+
             # output
             print ("Congratulations! A* with Euclidean distance has reached the destination!")
             result["maze_path"] = find_path(path_dict, destination)
@@ -62,6 +64,8 @@ def a_star_search(maze_dict, dim, maze_matrix):
             result["maze_matrix_visited"] = maze_matrix_AE_visited
             print ("Number of vertices visited: " + result["tree_size"])
             print ("Number of Max fringe: " + str(result["max_fringe"]))
+            result["maze_solve_time"] = (time.time() - start)
+            print ("running time is: " + str(result["maze_solve_time"]))
             return maze_matrix_AE_visited
         
         for child, path in maze_dict[current]:

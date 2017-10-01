@@ -1,6 +1,7 @@
 import numpy as np
 import math
 import heapq
+import time
 
 # Manhattan distance
 def dist_Manhattan(a, b):
@@ -31,6 +32,7 @@ class PriorityQueue:
 
 
 def a_star_search(maze_dict, dim, maze_matrix):
+    start = time.time()
     maze_matrix_AM_visited = np.copy(maze_matrix)
     visited = PriorityQueue()
     visited.put((0, 0), 0)
@@ -62,6 +64,8 @@ def a_star_search(maze_dict, dim, maze_matrix):
             result["maze_matrix_visited"] = maze_matrix_AM_visited
             print ("Number of vertices visited: " + result["tree_size"])
             print ("Number of Max fringe: " + str(result["max_fringe"]))
+            result["maze_solve_time"] = (time.time() - start)
+            print ("running time is: " + str(result["maze_solve_time"]))
             return maze_matrix_AM_visited
         
         for child, path in maze_dict[current]:
