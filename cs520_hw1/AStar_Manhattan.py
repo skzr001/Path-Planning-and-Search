@@ -44,11 +44,13 @@ def a_star_search(maze_dict, dim, maze_matrix):
     cost_so_far = {}
     cost_so_far[(0, 0)] = 0
     count = 0
+
     while not visited.empty():
         max_fringe = max(max_fringe, num_fringe)
         current = visited.get()
         num_fringe = 1
         if current == destination:
+            # output
             print ("Congratulations! A* with Manhattan distance has reached the destination!")
             result["maze_path"] = find_path(path_dict, destination)
             result["maze_max_length"] = len(result["maze_path"])

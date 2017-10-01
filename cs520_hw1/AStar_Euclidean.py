@@ -49,8 +49,8 @@ def a_star_search(maze_dict, dim, maze_matrix):
         current = visited.get()
         num_fringe = 1
         if current == destination:
-
-            # print ("Number of vertices visited: " + str(count+1))
+            
+            # output
             print ("Congratulations! A* with Euclidean distance has reached the destination!")
             result["maze_path"] = find_path(path_dict, destination)
             result["maze_max_length"] = len(result["maze_path"])
