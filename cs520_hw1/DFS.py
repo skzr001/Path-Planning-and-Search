@@ -1,10 +1,13 @@
 import numpy as np
+import time
+
 
 
 def dfs(maze_dict, dim, maze_matrix):
     maze_matrix_dfs_visited = np.copy(maze_matrix)
+    start = time.time()
 
-    path_dict = {}
+    path_dict = dict()
     path_dict[(0, 0)] = (0, 0)
 
     visited, stack = set(), [(0, 0)]
@@ -32,6 +35,8 @@ def dfs(maze_dict, dim, maze_matrix):
             print ("Congratulations! DFS has reached the destination!")
             result["maze_path"] = find_path(path_dict, destination)
             result["maze_max_length"] = len(result["maze_path"])
+            result["maze_solve_time"] = (time.time() - start)  # time to solve this maze
+            print ("running time is: " + str(result["maze_solve_time"]))
             #print ("Maze path is: ")
             print result["maze_path"]
             print ("Maze Path length is: " + str(len(result["maze_path"])))
@@ -40,7 +45,8 @@ def dfs(maze_dict, dim, maze_matrix):
             result["maze_matrix_visited"] = maze_matrix_dfs_visited
 
             print ("Number of vertices visited: " + result["tree_size"])
-            return maze_matrix_dfs_visited
+            #return maze_matrix_dfs_visited
+            return result
 
         for child, path in maze_dict[vertex]:
             if child not in visited:
