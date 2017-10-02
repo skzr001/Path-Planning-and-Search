@@ -13,7 +13,7 @@ import copy
 dim = 10
 prob_occ = 0.6
 property_num = 0
-method_num = 1  # 0.DFS 1.BFS 2.A*Euclidean 3.A*Manhattan
+method_num = 3  # 0.DFS 1.BFS 2.A*Euclidean 3.A*Manhattan
 
 def MethodChoose(method_num):
 
@@ -22,7 +22,7 @@ def MethodChoose(method_num):
     elif method_num == 1:
         method = BFS.bfs
     elif method_num == 2:
-        method = AStar_Euclidean.a_star_search
+        method = AStar_Euclidean.a_stars_search
     elif method_num == 3:
         method = AStar_Manhattan.a_star_search
     return method
@@ -62,7 +62,7 @@ def probability(new,old):
 #     return False
 
 
-T = 1000
+T = 10
 Tmin = 0.1
 r = 0.99
 property = ['maze_max_length','tree_size','max_fringe']
