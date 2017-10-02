@@ -2,6 +2,19 @@ import random
 import numpy as np
 import math
 
+
+
+def random_maze(dim, prob_occ):
+    maze_matrix = np.zeros((dim, dim))
+    num_disabled_blocks = int(np.floor(dim*dim*prob_occ)-2)
+    if num_disabled_blocks > 0:
+        occ_block = random.sample(range(1, (dim * dim) - 1), num_disabled_blocks)
+        occ_block = np.unravel_index(occ_block, (dim, dim))
+        maze_matrix[occ_block] = 1
+
+    return maze_matrix
+
+
 def build_maze(maze_matrix):
     maze_high, maze_width = maze_matrix.shape
     # print (mazeH,mazeW)
@@ -34,4 +47,3 @@ def build_maze(maze_matrix):
     #print (maze_dict)
 
     return maze_dict
-

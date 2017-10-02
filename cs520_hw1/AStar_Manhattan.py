@@ -55,19 +55,19 @@ def a_star_search(maze_dict, dim, maze_matrix):
 
         if current == destination:
             # output
-            print ("Congratulations! A* with Manhattan distance has reached the destination!")
+            #print ("Congratulations! A* with Manhattan distance has reached the destination!")
             result["maze_path"] = find_path(path_dict, destination)
             result["maze_max_length"] = len(result["maze_path"])
             # print ("Maze path is: ")
-            print result["maze_path"]
-            print ("Maze Path length is: " + str(len(result["maze_path"])))
+            #print result["maze_path"]
+            #print ("Maze Path length is: " + str(len(result["maze_path"])))
             result["tree_size"] = str(count)
             result["max_fringe"] = max_fringe
             result["maze_matrix_visited"] = maze_matrix_AM_visited
-            print ("Number of vertices visited: " + result["tree_size"])
-            print ("Number of Max fringe: " + str(result["max_fringe"]))
+            #print ("Number of vertices visited: " + result["tree_size"])
+            #print ("Number of Max fringe: " + str(result["max_fringe"]))
             result["maze_solve_time"] = (time.time() - start)
-            print ("running time is: " + str(result["maze_solve_time"]))
+            #print ("running time is: " + str(result["maze_solve_time"]))
             return result
         
         for child, path in maze_dict[current]:
@@ -80,6 +80,11 @@ def a_star_search(maze_dict, dim, maze_matrix):
                 num_fringe += 1
                 path_dict[child] = current
                 maze_matrix_AM_visited[child] = -1
+
+    result['maze_max_length'] = -1
+    result['tree_size'] = -1
+    result['max_fringe'] = -1
+    return result
 
 def find_path(path_dict, destination):
     path = list()

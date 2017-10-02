@@ -25,22 +25,22 @@ maze_dict = Maze.build_maze(maze_matrix)
 
 # Notice that BFS and DFS not the same as original version, we just need a route from START to END
 # show DFS
-result = DFS.dfs(maze_dict, dim, maze_matrix)
-print result["maze_matrix_visited"]
+#result = DFS.dfs(maze_dict, dim, maze_matrix)
+#print result["maze_matrix_visited"]
 
 # show BFS
-result = BFS.bfs(maze_dict, dim, maze_matrix)
-print result["maze_matrix_visited"]
+#result = BFS.bfs(maze_dict, dim, maze_matrix)
+#print result["maze_matrix_visited"]
 
 
 # show AStar_Manhattan
 result = AStar_Manhattan.a_star_search(maze_dict, dim, maze_matrix)
-print result["maze_matrix_visited"]
+print result
 
 
 # show AStar_Euclidean
-result = AStar_Euclidean.a_stars_search(maze_dict, dim, maze_matrix)
-print result["maze_matrix_visited"]
+#result = AStar_Euclidean.a_stars_search(maze_dict, dim, maze_matrix)
+#print result["maze_matrix_visited"]
 
 
 
