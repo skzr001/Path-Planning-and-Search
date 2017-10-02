@@ -5,8 +5,7 @@ import DFS
 import BFS
 import AStar_Euclidean
 import AStar_Manhattan
-
-# 我还没写完，别调试这个文件 By肖
+import numbers
 
 default_dim = 10
 default_prob_occ = 0.2
@@ -24,6 +23,7 @@ class Maze_simulation(object):
         self.dim = default_dim
         self.prob_occ = default_prob_occ
         self.maze_matrix = Maze.random_maze(self.dim, self.prob_occ)
+        self.maze_dict = Maze.build_maze(self.maze_matrix)
 
         self.window = Tk()
         self.window.title("Maze Simulation")
@@ -59,13 +59,13 @@ class Maze_simulation(object):
         print "Solve maze by " + self.selectedSolver
         start = time.time()
         if self.selectedSolver == solver_choices[0]:  # DFS
-            maze_matrix_visited = DFS.dfs(self.maze_matrix)
+            maze_matrix_visited = DFS.dfs(self.maze_dict, self.dim, self.maze_matrix)
         elif self.selectedSolver == solver_choices[1]:  # BFS
-            maze_matrix_visited = BFS.bfs(self.maze_matrix)
+            maze_matrix_visited = BFS.bfs(self.maze_dict, self.dim, self.maze_matrix)
         elif self.selectedSolver == solver_choices[2]:  # AStar with Euclidean
-            maze_matrix_visited = AStar_Euclidean.a_star_search(self.maze_matrix)
+            maze_matrix_visited = AStar_Euclidean.a_star_search(self.maze_dict, self.dim, self.maze_matrix)
         elif self.selectedSolver == solver_choices[3]:  # AStar with Manhattan
-            maze_matrix_visited = AStar_Manhattan.a_star_search(self.maze_matrix)
+            maze_matrix_visited = AStar_Manhattan.a_star_search(self.maze_dict, self.dim, self.maze_matrix)
         elapsed = (time.time() - start)
         print('Time elapsed: ', elapsed)
         if maze_matrix_visited != "No result!":
@@ -74,27 +74,120 @@ class Maze_simulation(object):
     def draw_color(self, x, y, color='red'):
         self.canvas.itemconfig(self.tiles[x][y], fill=color)
 
+
     def visualizing(self, maze_matrix_visited):
+        maze_solved = maze_matrix_visited["maze_matrix_visited"]
         for i in range(self.dim):
             for j in range(self.dim):
-                if maze_matrix_visited[i][j] != 1:
+                if maze_solved[i][j] != 1:
                     self.draw_color(i, j, 'white')
-                elif maze_matrix_visited[i][j] == 1:
+                elif maze_solved[i][j] == 1:
                     self.draw_color(i, j, 'black')
 
-        for i in range(len(rs["record"])):
-            loc = rs["record"][i]
-            self.draw_color(loc.x, loc.y, 'yellow')
-            time.sleep(0.05)
-            self.window.update()
-            if self.fastModeEnabled == True:
-                for i in range(len(rs["record"])):
-                    loc = rs["record"][i]
-                    self.draw_color(loc.x, loc.y, 'yellow')
-                for i in range(len(rs["solution"])):
-                    loc = rs["solution"][i]
-                    self.draw_color(loc.x, loc.y, 'blue')
-                return
-        for i in range(len(rs["solution"])):
-            loc = rs["solution"][i]
-            self.draw_color(loc.x, loc.y, 'blue')
+        for i in range(self.dim):
+            for j in range(self.dim):
+                if maze_solved[i][j] == -1:
+                    self.draw_color(i, j, 'yellow')
+
+        # Maybe I shouldn't store vertex in form (x,y)
+        # Stupid decision waste my too many time
+        for i in (maze_matrix_visited["maze_path"]):
+            x = i[0]
+            y = i[1]
+            self.draw_color(x, y, 'blue')
+
+    def prepare_configuration(resp):
+        print "Show configuration"
+        root = Tk()
+        # Reset button
+        carTypeBtn = Button(root, text="Reset simulator",
+                            command=resp.reset_simulator)
+        carTypeBtn.pack()
+        # Tile Edit On/Off Switch
+        mapEditBtn = Button(root, text="Map Edit: Off",
+                            command=resp.enable_edit)
+        mapEditBtn.pack()
+        resp.mapEdit = mapEditBtn
+        # Maze Dimensions
+        nDimLabel = Label(root, text="Number of dimensions")
+        nDimLabel.pack()
+        nDimEntry = Entry(root, justify='center',
+                          textvariable=StringVar(root, value=str(default_dim)))
+        nDimEntry.pack()
+        resp.nDimEntry = nDimEntry
+
+        # Block Probability
+        probLabel = Label(root, text="Probability of block tiles")
+        probLabel.pack()
+        probEntry = Entry(root, justify='center',
+                          textvariable=StringVar(root, value=str(default_prob_occ)))
+        probEntry.pack()
+        resp.probEntry = probEntry
+
+        # Run Solver
+        solverLabel = Label(root, text="Choose the solver")
+        solverLabel.pack()
+        tkvar = StringVar(root, value=solver_choices[0])
+        tkvar.trace('w', lambda *args: resp.changeSolver(tkvar.get()))
+        solverOption = OptionMenu(root, tkvar, *solver_choices)
+        solverOption.pack()
+        solverBtn = Button(root, text="Solve", command=resp.solver)
+        solverBtn.pack()
+
+        return root
+
+    def reset_simulator(self):
+        self.mapEditEnabled = False
+
+        self.maze_matrix = Maze.random_maze(self.dim, self.prob_occ)
+        self.maze_dict = Maze.build_maze(self.maze_matrix)
+        self.canvas.delete("all")
+        self.draw_maze_matrix()
+        pass
+
+    def enable_edit(self):
+        if self.map_edit_enabled == False:
+            self.map_edit_enabled = True
+            self.mapEdit.config(text="Map Edit: On")
+        else:
+            self.changeMap()
+            self.map_edit_enabled = False
+            self.mapEdit.config(text="Map Edit: Off")
+
+
+    def changeMap(self):
+        print "Update map"
+        self.changeNDim()
+        self.changeProb()
+        self.maze_matrix = Maze.random_maze(self.dim, self.prob_occ)
+        self.canvas.delete("all")
+        self.draw_maze_matrix()
+
+    def changeNDim(self):
+        print "Change the number of rows"
+        entry = self.nDimEntry
+        nDim = entry.get()
+        if not nDim.isdigit() or self.map_edit_enabled == False:
+            entry.delete(0, END)
+            entry.insert(0, str(self.dim))
+        else:
+            self.dim = int(nDim)
+
+    def changeProb(self):
+        entry = self.probEntry
+        p = entry.get()
+        if isinstance(p, numbers.Number) or self.map_edit_enabled == False:
+            entry.delete(0, END)
+            entry.insert(0, str(self.prob_occ))
+        else:
+            self.prob_occ = float(p)
+
+    def changeSolver(self, item):
+        print "Change solver to: " + item
+        self.selectedSolver = item
+
+    #def changeHardest(self, item):
+    #    print "Change property to: " + item
+    #    self.selectedHardest = item
+
+ms = Maze_simulation()

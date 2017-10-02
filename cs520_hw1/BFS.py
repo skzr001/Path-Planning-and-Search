@@ -24,21 +24,21 @@ def bfs(maze_dict, dim, maze_matrix):  # maybe this is the most concise code
             continue
 
         if vertex == destination:
-            print ("BFS has reached the destination")
-            print ("Number of vertices visited: " + str(len(visited)))
+            #print ("BFS has reached the destination")
+            #print ("Number of vertices visited: " + str(len(visited)))
 
             result["maze_path"] = find_path(path_dict, destination)
             result["maze_max_length"] = len(result["maze_path"])
 
             result["maze_solve_time"] = (time.time() - start)  # time to solve this maze
-            print ("Maze Path length is: " + str(len(result["maze_path"])))
+            #print ("Maze Path length is: " + str(len(result["maze_path"])))
 
-            print result["maze_path"]
-            print ("Maze Path length is: " + str(len(result["maze_path"])))
-            result["tree_size"] = str(len(visited))
+            #print result["maze_path"]
+            #print ("Maze Path length is: " + str(len(result["maze_path"])))
+            result["tree_size"] = len(visited)
             result["max_fringe"] = max_fringe
             result["maze_matrix_visited"] = maze_matrix_bfs_visited
-            print ("Number of vertices visited: " + result["tree_size"])
+            #print ("Number of vertices visited: " + result["tree_size"])
 
             #return maze_matrix_bfs_visited
             return result
@@ -49,7 +49,11 @@ def bfs(maze_dict, dim, maze_matrix):  # maybe this is the most concise code
                 path_dict[child] = vertex
                 queue.append(child)
 
-    return "No result!"
+    result['maze_max_length'] = -1
+    result['tree_size'] = -1
+    result['max_fringe'] = -1
+    return  result
+    #return "No result!"
 
 
 def find_path(path_dict, destination):

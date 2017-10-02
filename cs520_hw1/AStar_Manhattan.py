@@ -1,12 +1,14 @@
 import numpy as np
 import math
 import heapq
+import time
 
+
+# Manhattan distance
 def dist_Manhattan(a, b):
     (x1, y1) = a
     (x2, y2) = b
     return abs(x1 - x2) + abs(y1 - y2)
-
 
 
 class PriorityQueue:
@@ -30,24 +32,44 @@ class PriorityQueue:
 
 
 def a_star_search(maze_dict, dim, maze_matrix):
+    start = time.time()
     maze_matrix_AM_visited = np.copy(maze_matrix)
-    result = dict()
-
     visited = PriorityQueue()
     visited.put((0, 0), 0)
     destination = (dim - 1, dim - 1)
-    came_from = {}
+    path_dict = {}
+    path_dict[(0, 0)] = (0, 0)
+    result = dict()
+    result["status"] = -1
+    max_fringe = 0
+    num_fringe = 1
     cost_so_far = {}
-    came_from[(0, 0)] = None
     cost_so_far[(0, 0)] = 0
     count = 0
+
     while not visited.empty():
+        max_fringe = max(max_fringe, num_fringe)
         current = visited.get()
+        num_fringe = 1
+        maze_matrix_AM_visited[(0, 0)] = -1
 
         if current == destination:
-            print ("A* with Manhattan distance has reached the destination")
-            print ("Number of vertices visited: " + str(count+1))
-            return maze_matrix_AM_visited
+            # output
+            #print ("Congratulations! A* with Manhattan distance has reached the destination!")
+            result["maze_path"] = find_path(path_dict, destination)
+            result["maze_max_length"] = len(result["maze_path"])
+            result["reachable"] = True  # indicate whether maze is solved
+            # print ("Maze path is: ")
+            #print result["maze_path"]
+            #print ("Maze Path length is: " + str(len(result["maze_path"])))
+            result["tree_size"] = str(count)
+            result["max_fringe"] = max_fringe
+            result["maze_matrix_visited"] = maze_matrix_AM_visited
+            #print ("Number of vertices visited: " + result["tree_size"])
+            #print ("Number of Max fringe: " + str(result["max_fringe"]))
+            result["maze_solve_time"] = (time.time() - start)
+            #print ("running time is: " + str(result["maze_solve_time"]))
+            return result
 
         for child, path in maze_dict[current]:
             new_cost = cost_so_far[current] + 1
@@ -56,6 +78,20 @@ def a_star_search(maze_dict, dim, maze_matrix):
                 priority = new_cost + dist_Manhattan(destination, child)
                 visited.put(child, priority)
                 count += 1
+                num_fringe += 1
+                path_dict[child] = current
                 maze_matrix_AM_visited[child] = -1
 
 
+def find_path(path_dict, destination):
+    path = list()
+    path.append(destination)
+    current_node = destination
+
+    while current_node != (0, 0):
+        # print ("current node" + str(current_node))
+        current_node = path_dict[current_node]
+        # print ("Parent of current node" + str(current_node))
+        path.append(current_node)
+
+    return path

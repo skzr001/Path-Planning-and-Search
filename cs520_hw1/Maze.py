@@ -3,6 +3,7 @@ import numpy as np
 import math
 
 
+
 def random_maze(dim, prob_occ):
     maze_matrix = np.zeros((dim, dim))
     num_disabled_blocks = int(np.floor(dim*dim*prob_occ)-2)
@@ -26,7 +27,7 @@ def build_maze(maze_matrix):
                 maze_dict[(i, j)] = []
 
     #print('For loop version')
-    print (maze_dict)
+    #print (maze_dict)
 
     for i in range(maze_high):
         for j in range(maze_width):

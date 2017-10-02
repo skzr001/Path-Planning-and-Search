@@ -6,6 +6,7 @@ import DFS
 import BFS
 import AStar_Manhattan
 import AStar_Euclidean
+import matplotlib.pyplot as plt
 
 dim = int(input("Please enter a number indicating the dimension of maze: "))
 #maze_matrix = np.zeros((dim, dim))
@@ -28,11 +29,11 @@ maze_dict = Maze.build_maze(maze_matrix)
 # Notice that BFS and DFS not the same as original version, we just need a route from START to END
 # show DFS
 maze_matrix_dfs_visited = DFS.dfs(maze_dict, dim, maze_matrix)
-print maze_matrix_dfs_visited["maze_matrix_dfs_visited"]
+print (maze_matrix_dfs_visited["maze_matrix_visited"])
 
 # show_BFS
 maze_matrix_bfs_visited = BFS.bfs(maze_dict, dim, maze_matrix)
-print maze_matrix_bfs_visited["maze_matrix_bfs_visited"]
+print (maze_matrix_bfs_visited["maze_matrix_visited"])
 
 
 # show_AStar_Manhattan
