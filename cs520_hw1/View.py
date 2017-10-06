@@ -5,6 +5,7 @@ import DFS
 import BFS
 import AStar_Euclidean
 import AStar_Manhattan
+import SimulatedAnnealing
 import numbers
 
 default_dim = 10
@@ -13,10 +14,13 @@ default_prob_occ = 0.2
 default_canvas_height = 600
 default_canvas_width = 600
 
-solver_choices = ['Deep First Search',
-                  'Breadth First Search',
-                  'A_Star with Euclidean Search',
-                  'A_Star with Manhattan Search']
+solver_choices = ["Deep First Search",
+                  "Breadth First Search",
+                  "A_Star with Euclidean Search",
+                  "A_Star with Manhattan Search"]
+
+hard_choices = ["maze_max_length", "tree_size", "max_fringe"]
+
 
 class Maze_simulation(object):
     def __init__(self):
@@ -29,21 +33,35 @@ class Maze_simulation(object):
         self.window.title("Maze Simulation")
         self.window.geometry('+200+10')
 
-        self.canvas = Canvas(self.window, bg="#ffffff", height=default_canvas_height, width=default_canvas_width)
+        # SA window
+        self.SA_window = Tk()
+        self.SA_window.title("Simulated Annealing")
+        self.SA_window.geometry('+200+10')
 
+        # Sa canvas
+        self.SA_canvas = Canvas(self.SA_window, bg="#ffffff", height=default_canvas_height, width=default_canvas_width)
+        self.SA_canvas.pack()
+        # Window Canvas
+        self.canvas = Canvas(self.window, bg="#ffffff", height=default_canvas_height, width=default_canvas_width)
         self.canvas.pack()
 
         self.draw_maze_matrix()
+        self.draw_SA_matrix()
+
 
         self.map_edit_enabled = False
         self.fast_mode_enabled = False
+
+        self.select_hard = hard_choices[0]
 
         configWindow = Maze_simulation.prepare_configuration(self)
         self.selectedSolver = solver_choices[0]
         #self.selectedHardest = hardest_choices[0]
 
         configWindow.mainloop()
+        self.SA_window.mainloop()
         self.window.mainloop()
+
 
     def draw_maze_matrix(self):
         tile_dim = (default_canvas_height - 20) / self.dim
@@ -55,24 +73,37 @@ class Maze_simulation(object):
                 if self.maze_matrix[i][j] == 1:
                     self.canvas.itemconfig(self.tiles[i][j], fill="#000000")
 
+    def draw_SA_matrix(self):
+        tile_dim = (default_canvas_height - 20) / self.dim
+        self.tiles = [[self.SA_canvas.create_rectangle(10 + i * tile_dim, 10 + j * tile_dim,10 + (i + 1) * tile_dim, 10 + (j + 1) * tile_dim)
+            for i in range(self.dim)] for j in range(self.dim)]
+
+        for i in range(self.dim):
+            for j in range(self.dim):
+                if self.maze_matrix[i][j] == 1:
+                    self.SA_canvas.itemconfig(self.tiles[i][j], fill="#000000")
+
     def solver(self):
-        print "Solve maze by " + self.selectedSolver
+        #print "Solve maze by " + self.selectedSolver
         start = time.time()
         if self.selectedSolver == solver_choices[0]:  # DFS
             maze_matrix_visited = DFS.dfs(self.maze_dict, self.dim, self.maze_matrix)
         elif self.selectedSolver == solver_choices[1]:  # BFS
             maze_matrix_visited = BFS.bfs(self.maze_dict, self.dim, self.maze_matrix)
         elif self.selectedSolver == solver_choices[2]:  # AStar with Euclidean
-            maze_matrix_visited = AStar_Euclidean.a_star_search(self.maze_dict, self.dim, self.maze_matrix)
+            maze_matrix_visited = AStar_Euclidean.a_stars_search(self.maze_dict, self.dim, self.maze_matrix)
         elif self.selectedSolver == solver_choices[3]:  # AStar with Manhattan
             maze_matrix_visited = AStar_Manhattan.a_star_search(self.maze_dict, self.dim, self.maze_matrix)
         elapsed = (time.time() - start)
-        print('Time elapsed: ', elapsed)
+        # print('Time elapsed: ', elapsed)
         if maze_matrix_visited != "No result!":
             self.visualizing(maze_matrix_visited)
 
     def draw_color(self, x, y, color='red'):
         self.canvas.itemconfig(self.tiles[x][y], fill=color)
+
+    def draw_SA_color(self, x, y, color='red'):
+        self.SA_canvas.itemconfigure(self.tiles[x][y], fill=color)
 
 
     def visualizing(self, maze_matrix_visited):
@@ -94,7 +125,30 @@ class Maze_simulation(object):
         for i in (maze_matrix_visited["maze_path"]):
             x = i[0]
             y = i[1]
-            self.draw_color(x, y, 'blue')
+            self.draw_color(x, y, 'green')
+
+    def SA_visualizing(self, maze_matrix_visited):
+        maze_solved = maze_matrix_visited["maze_matrix_visited"]
+        print maze_solved
+        for i in range(self.dim):
+            for j in range(self.dim):
+                if maze_solved[i][j] != 1:
+                    self.draw_SA_color(i, j, 'white')
+                elif maze_solved[i][j] == 1:
+                    self.draw_SA_color(i, j, 'black')
+        print ("SA draw")
+
+        for i in range(self.dim):
+            for j in range(self.dim):
+                if maze_solved[i][j] == -1:
+                    self.draw_SA_color(i, j, 'yellow')
+
+        for i in (maze_matrix_visited["maze_path"]):
+            x = i[0]
+            y = i[1]
+            self.draw_SA_color(x, y, 'green')
+
+        print ("SA draw")
 
     def prepare_configuration(resp):
         print "Show configuration"
@@ -134,7 +188,26 @@ class Maze_simulation(object):
         solverBtn = Button(root, text="Solve", command=resp.solver)
         solverBtn.pack()
 
+        #SA button
+        hardLabel = Label(root, text="Choose a property")
+        hardLabel.pack()
+        tkvar2 = StringVar(root, value=hard_choices[0])
+        tkvar2.trace('w', lambda *args: resp.changeHard(tkvar2.get()))
+        hardestOption = OptionMenu(root, tkvar2, *hard_choices)
+        hardestOption.pack()
+        SABtn = Button(root, text="simAnnealing", command=resp.run_SA)
+        SABtn.pack()
+
         return root
+
+    def run_SA(self):
+        print "Solve hard maze by " + self.selectedSolver
+        start = time.time()
+        maze_matrix_visited = SimulatedAnnealing.SA(self.dim, self.selectedSolver, self.select_hard)
+        elapsed = (time.time() - start)
+        # print('Time elapsed: ', elapsed)
+        if maze_matrix_visited != "No result!":
+            self.SA_visualizing(maze_matrix_visited)
 
     def reset_simulator(self):
         self.mapEditEnabled = False
@@ -142,7 +215,9 @@ class Maze_simulation(object):
         self.maze_matrix = Maze.random_maze(self.dim, self.prob_occ)
         self.maze_dict = Maze.build_maze(self.maze_matrix)
         self.canvas.delete("all")
+        self.SA_canvas.delete("all")
         self.draw_maze_matrix()
+        self.draw_SA_matrix()
         pass
 
     def enable_edit(self):
@@ -161,7 +236,9 @@ class Maze_simulation(object):
         self.changeProb()
         self.maze_matrix = Maze.random_maze(self.dim, self.prob_occ)
         self.canvas.delete("all")
+        self.SA_canvas.delete("all")
         self.draw_maze_matrix()
+        self.draw_SA_matrix()
 
     def changeNDim(self):
         print "Change the number of rows"
@@ -186,8 +263,8 @@ class Maze_simulation(object):
         print "Change solver to: " + item
         self.selectedSolver = item
 
-    #def changeHardest(self, item):
-    #    print "Change property to: " + item
-    #    self.selectedHardest = item
+    def changeHard(self, item):
+        print "Change property to: " + item
+        self.select_hard = item
 
 ms = Maze_simulation()

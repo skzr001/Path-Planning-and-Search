@@ -20,6 +20,7 @@ if num_disabled_blocks > 0:
     occ_block = np.unravel_index(occ_block, (dim, dim))
     maze_matrix[occ_block] = 1
 '''
+
 maze_matrix = Maze.random_maze(dim, prob_occ)
 print(maze_matrix)
 maze_matrix = Maze.random_maze(dim, prob_occ)

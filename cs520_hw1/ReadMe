@@ -1,0 +1,13 @@
+In View.py you can see the visualization of maze solving procedure.
+Trough pressing map edit, you can change the dimension of our maze, change the probability of traps.
+You could choose DFS, BFS, A* EUCLIDEAN, A* MANHATTAN to solve the maze.
+You could use three property "fringe, tree size, and max path length" to generate hardest maze.
+
+In visualization:
+White Block: You can go through.
+Black Block: You cannot go through.
+Yellow Block: Nodes that have been visited during problem solving.
+Green Block: Our final path to the destination.
+
+
+

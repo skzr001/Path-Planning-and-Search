@@ -3,7 +3,6 @@ import math
 import heapq
 import time
 
-
 # Manhattan distance
 def dist_Manhattan(a, b):
     (x1, y1) = a
@@ -11,22 +10,23 @@ def dist_Manhattan(a, b):
     return abs(x1 - x2) + abs(y1 - y2)
 
 
+
 class PriorityQueue:
     def __init__(self):
         self.elements = []
-
+    
     def empty(self):
         return len(self.elements) == 0
-
+    
     def put(self, item, priority):
         heapq.heappush(self.elements, (priority, item))
-
+    
     def get(self):
         return heapq.heappop(self.elements)[1]
-
+    
     def __getitem__(self, key):
         return self[key]
-
+    
     def __len__(self):
         return len(self.elements)
 
@@ -50,7 +50,7 @@ def a_star_search(maze_dict, dim, maze_matrix):
     while not visited.empty():
         max_fringe = max(max_fringe, num_fringe)
         current = visited.get()
-        num_fringe = 1
+        num_fringe -= 1
         maze_matrix_AM_visited[(0, 0)] = -1
 
         if current == destination:
@@ -58,11 +58,10 @@ def a_star_search(maze_dict, dim, maze_matrix):
             #print ("Congratulations! A* with Manhattan distance has reached the destination!")
             result["maze_path"] = find_path(path_dict, destination)
             result["maze_max_length"] = len(result["maze_path"])
-            result["reachable"] = True  # indicate whether maze is solved
             # print ("Maze path is: ")
             #print result["maze_path"]
             #print ("Maze Path length is: " + str(len(result["maze_path"])))
-            result["tree_size"] = str(count)
+            result["tree_size"] = count
             result["max_fringe"] = max_fringe
             result["maze_matrix_visited"] = maze_matrix_AM_visited
             #print ("Number of vertices visited: " + result["tree_size"])
@@ -70,7 +69,7 @@ def a_star_search(maze_dict, dim, maze_matrix):
             result["maze_solve_time"] = (time.time() - start)
             #print ("running time is: " + str(result["maze_solve_time"]))
             return result
-
+        
         for child, path in maze_dict[current]:
             new_cost = cost_so_far[current] + 1
             if child not in cost_so_far or new_cost < cost_so_far[child]:
@@ -82,6 +81,10 @@ def a_star_search(maze_dict, dim, maze_matrix):
                 path_dict[child] = current
                 maze_matrix_AM_visited[child] = -1
 
+    result['maze_max_length'] = -1
+    result['tree_size'] = -1
+    result['max_fringe'] = -1
+    return result
 
 def find_path(path_dict, destination):
     path = list()
@@ -89,9 +92,9 @@ def find_path(path_dict, destination):
     current_node = destination
 
     while current_node != (0, 0):
-        # print ("current node" + str(current_node))
+        #print ("current node" + str(current_node))
         current_node = path_dict[current_node]
-        # print ("Parent of current node" + str(current_node))
+        #print ("Parent of current node" + str(current_node))
         path.append(current_node)
 
     return path
